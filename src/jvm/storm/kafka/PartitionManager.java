@@ -180,7 +180,7 @@ public class PartitionManager {
     }
 
     public void commit() {
-        LOG.info("Committing offset for " + _partition);
+        //LOG.info("Committing offset for " + _partition);
         long committedTo;
         if(_pending.isEmpty()) {
             committedTo = _emittedToOffset;
@@ -188,7 +188,7 @@ public class PartitionManager {
             committedTo = _pending.first();
         }
         if(committedTo!=_committedTo) {
-            LOG.info("Writing committed offset to ZK: " + committedTo);
+            //LOG.info("Writing committed offset to ZK: " + committedTo);
 
             Map<Object, Object> data = (Map<Object,Object>)ImmutableMap.builder()
                 .put("topology", ImmutableMap.of("id", _topologyInstanceId,
@@ -200,10 +200,10 @@ public class PartitionManager {
                 .put("topic", _spoutConfig.topic).build();
 	    _state.writeJSON(committedPath(), data);
 
-            LOG.info("Wrote committed offset to ZK: " + committedTo);
+            //LOG.info("Wrote committed offset to ZK: " + committedTo);
             _committedTo = committedTo;
         }
-        LOG.info("Committed offset " + committedTo + " for " + _partition);
+        //LOG.info("Committed offset " + committedTo + " for " + _partition);
     }
 
     private String committedPath() {

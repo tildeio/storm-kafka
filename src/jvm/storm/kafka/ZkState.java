@@ -49,7 +49,7 @@ public class ZkState {
     }
 
     public void writeJSON(String path, Map<Object,Object> data) {
-	LOG.info("Writing " + path + " the data " + data.toString());
+	//LOG.info("Writing " + path + " the data " + data.toString());
         writeBytes(path, JSONValue.toJSONString(data).getBytes(Charset.forName("UTF-8")));
     }
 
