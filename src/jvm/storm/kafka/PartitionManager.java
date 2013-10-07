@@ -145,17 +145,17 @@ public class PartitionManager {
         int numMessages = countMessages(msgs);
         _fetchAPIMessageCount.incrBy(numMessages);
 
-        if(numMessages>0) {
+/*        if(numMessages>0) {
           LOG.info("Fetched " + numMessages + " messages from Kafka: " + _consumer.host() + ":" + _partition.partition);
-        }
+        }*/
         for(MessageAndOffset msg: msgs) {
             _pending.add(_emittedToOffset);
             _waitingToEmit.add(new MessageAndRealOffset(msg.message(), _emittedToOffset));
             _emittedToOffset = msg.nextOffset();
         }
-        if(numMessages>0) {
+        /*if(numMessages>0) {
           LOG.info("Added " + numMessages + " messages from Kafka: " + _consumer.host() + ":" + _partition.partition + " to internal buffers");
-        }
+        }*/
     }
 
 	private int countMessages(ByteBufferMessageSet messageSet) {
