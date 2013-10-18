@@ -104,27 +104,32 @@ public class KafkaSpout extends BaseRichSpout {
 
     @Override
     public void close() {
-	_state.close();
+		_state.close();
     }
 
     @Override
     public void nextTuple() {
         List<PartitionManager> managers = _coordinator.getMyManagedPartitions();
         for(int i=0; i<managers.size(); i++) {
-            
+
             // in case the number of managers decreased
             _currPartitionIndex = _currPartitionIndex % managers.size();
-            EmitState state = managers.get(_currPartitionIndex).next(_collector);
-            if(state!=EmitState.EMITTED_MORE_LEFT) {
-                _currPartitionIndex = (_currPartitionIndex + 1) % managers.size();
-            }
-            if(state!=EmitState.NO_EMITTED) {
-                break;
-            }
+			try {
+				EmitState state = managers.get(_currPartitionIndex).next(_collector);
+				if(state!=EmitState.EMITTED_MORE_LEFT) {
+					_currPartitionIndex = (_currPartitionIndex + 1) % managers.size();
+				}
+				if(state!=EmitState.NO_EMITTED) {
+					break;
+				}
+			} catch (Exception e) {
+				_coordinator.refresh();
+				break;
+			}
         }
 
         long now = System.currentTimeMillis();
-        if((now - _lastUpdateMs) > _spoutConfig.stateUpdateIntervalMs) {
+        if ((now - _lastUpdateMs) > _spoutConfig.stateUpdateIntervalMs) {
             commit();
         }
     }
@@ -135,7 +140,7 @@ public class KafkaSpout extends BaseRichSpout {
         PartitionManager m = _coordinator.getManager(id.partition);
         if(m!=null) {
             m.ack(id.offset);
-        }                
+        }
     }
 
     @Override
@@ -144,7 +149,7 @@ public class KafkaSpout extends BaseRichSpout {
         PartitionManager m = _coordinator.getManager(id.partition);
         if(m!=null) {
             m.fail(id.offset);
-        } 
+        }
     }
 
     @Override
