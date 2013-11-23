@@ -282,10 +282,16 @@ public class TridentKafkaEmitter {
                                        TridentCollector tridentCollector,
                                        Partition partition, Map map) {
         LOG.debug("emitting new batch; partition={}; meta={}", partition, map);
-        Map meta = failFastEmitNewPartitionBatch(
-          transactionAttempt, tridentCollector, partition, map);
-        LOG.debug("emitted new batch; meta={}", map);
-        return meta;
+        try {
+          Map meta = failFastEmitNewPartitionBatch(
+            transactionAttempt, tridentCollector, partition, map);
+          LOG.debug("emitted new batch; meta={}", map);
+          return meta;
+        }
+        catch (Throwable t) {
+          LOG.error("something went wrong", t);
+          throw t;
+        }
       }
 
       /**

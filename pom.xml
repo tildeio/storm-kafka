@@ -6,7 +6,7 @@
   <groupId>io.tilde.vendor</groupId>
   <artifactId>storm-kafka</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.6-tilde1</version>
+  <version>0.1.6-tilde2</version>
   <name>Storm Kafka Spout</name>
   <description>Storm module for kafka 0.8</description>
 
