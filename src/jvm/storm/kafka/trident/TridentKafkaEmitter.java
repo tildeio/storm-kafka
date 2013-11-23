@@ -141,6 +141,7 @@ public class TridentKafkaEmitter {
     newMeta.put("topic", _config.topic);
     newMeta
       .put("topology", ImmutableMap.of("name", _topologyName, "id", _topologyInstanceId));
+
     return newMeta;
   }
 
@@ -267,8 +268,10 @@ public class TridentKafkaEmitter {
                                        TridentCollector tridentCollector,
                                        Partition partition, Map map) {
         LOG.debug("emitting new batch; partition={}; meta={}", partition, map);
-        return failFastEmitNewPartitionBatch(transactionAttempt, tridentCollector,
-          partition, map);
+        Map meta = failFastEmitNewPartitionBatch(
+          transactionAttempt, tridentCollector, partition, map);
+        LOG.debug("emitted new batch; meta={}", map);
+        return meta;
       }
 
       /**
