@@ -113,6 +113,8 @@ public class TridentKafkaEmitter {
       if (_config.forceFromStart) startTime = _config.startOffsetTime;
       offset =
         KafkaUtils.getOffset(consumer, _config.topic, partition.partition, startTime);
+
+      LOG.debug("fetched offset from kafka; offset={}", offset);
     }
     ByteBufferMessageSet msgs;
     try {
@@ -126,11 +128,19 @@ public class TridentKafkaEmitter {
         throw new RuntimeException(e);
       }
     }
+
+    if (LOG.isDebugEnabled())
+      LOG.debug("fetched messages; size-in-bytes={}", msgs.sizeInBytes());
+
     long endoffset = offset;
     for (MessageAndOffset msg : msgs) {
       emit(collector, msg.message());
       endoffset = msg.nextOffset();
     }
+
+    LOG.debug("building new meta; partition={}; offset={}; endOffset={}",
+      partition.partition, offset, endoffset);
+
     Map newMeta = new HashMap();
     newMeta.put("offset", offset);
     newMeta.put("nextOffset", endoffset);
@@ -150,6 +160,10 @@ public class TridentKafkaEmitter {
     ByteBufferMessageSet msgs;
     long start = System.nanoTime();
     FetchRequestBuilder builder = new FetchRequestBuilder();
+
+    LOG.debug("fetching messages; topic={}; partition={}; offset={}; fetch-size={}",
+      _config.topic, partition.partition, offset, _config.fetchSizeBytes);
+
     FetchRequest fetchRequest =
       builder.addFetch(_config.topic, partition.partition, offset, _config.fetchSizeBytes)
         .clientId(_config.clientId).build();
