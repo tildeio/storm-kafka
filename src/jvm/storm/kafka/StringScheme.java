@@ -9,15 +9,16 @@ import java.util.List;
 
 public class StringScheme implements Scheme {
 
-    public List<Object> deserialize(byte[] bytes) {
-        try {
-            return new Values(new String(bytes, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+  public List<Object> deserialize(byte[] bytes) {
+    try {
+      return new Values(new String(bytes, "UTF-8"));
     }
+    catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-    public Fields getOutputFields() {
-        return new Fields("str");
-    }
+  public Fields getOutputFields() {
+    return new Fields("str");
+  }
 }
